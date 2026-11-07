@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {detectMime,validatePhoto,validateIncident,photoPath,safeConfig,friendlyError,MAX_BYTES} from '../src/domain.js';
+const jpg=Uint8Array.from([255,216,255,224,0,16,74,70,73,70,0,1]);
+const png=Uint8Array.from([137,80,78,71,13,10,26,10,0,0,0,13]);
+const uuid='11111111-1111-4111-8111-111111111111';
+const form={title:'Luminaria dañada',description:'La luminaria del pasillo no enciende.',location:'Edificio A',category:'Electricidad',priority:'high'};
+test('acepta JPEG PNG y WebP por sus bytes reales',()=>{assert.equal(validatePhoto(jpg).mime,'image/jpeg');assert.equal(validatePhoto(png).extension,'png');const webp=new TextEncoder().encode('RIFF0000WEBPxxxx');assert.equal(detectMime(webp),'image/webp');});
+test('rechaza formato no permitido aunque se cambie el nombre del archivo',()=>{assert.throws(()=>validatePhoto(new TextEncoder().encode('%PDF-1.7 archivo.jpg')),/Formato no permitido/);assert.throws(()=>validatePhoto(new TextEncoder().encode('<svg onload=alert(1)>')),/Formato no permitido/);});
+test('rechaza vacío y más de cinco MB antes de iniciar la transferencia',()=>{assert.throws(()=>validatePhoto(new Uint8Array()),/vacía/);const big=new Uint8Array(MAX_BYTES+1);big.set(jpg);assert.throws(()=>validatePhoto(big),/5 MB/);});
+test('valida todos los campos y conserva el texto como dato',()=>{assert.equal(validateIncident({...form,title:'  Luminaria dañada  '}).title,'Luminaria dañada');for(const patch of [{title:'x'},{description:'x'},{location:''},{priority:'admin'},{category:'<script>'}])assert.throws(()=>validateIncident({...form,...patch}));});
+test('referencia de archivo usa dueño e incidencia válidos y hash',()=>{const path=photoPath(uuid,uuid,'a'.repeat(64),'jpg');assert.equal(path,`${uuid}/${uuid}/${'a'.repeat(24)}.jpg`);assert.throws(()=>photoPath('../otro',uuid,'a'.repeat(64),'jpg'));assert.throws(()=>photoPath(uuid,uuid,'a'.repeat(64),'exe'));});
+test('configuración HTTPS solo admite claves públicas y rechaza privilegios administrativos',()=>{assert.ok(safeConfig('https://example.supabase.co','sb_publishable_'+'a'.repeat(30)));assert.equal(safeConfig('http://example.supabase.co','sb_publishable_'+'a'.repeat(30)),false);assert.equal(safeConfig('https://example.supabase.co','sb_secret_'+'a'.repeat(30)),false);const token=role=>'x.'+Buffer.from(JSON.stringify({role})).toString('base64url')+'.x';assert.equal(safeConfig('https://example.supabase.co',token('service_role')),false);assert.equal(safeConfig('https://example.supabase.co',token('anon')),true);});
+test('mensajes diferencian permisos conexión y credenciales incorrectas',()=>{assert.match(friendlyError(new Error('Failed to fetch')),/conexión/);assert.match(friendlyError(new Error('new row violates row-level security policy')),/autorización/);assert.match(friendlyError(new Error('Invalid login credentials')),/contraseña incorrectos/);});

@@ -1,0 +1,13 @@
+{
+  "executedAt": "2026-11-07T16:59:37.876Z",
+  "checks": [
+    "Inicio de sesión real y consulta de reportes",
+    "Galería y vista previa real de PNG seleccionado",
+    "Pérdida de conexión durante carga: error visible y formulario conservado",
+    "Reintento real exitoso y fotografía remota en detalle",
+    "Recarga de aplicación recupera la misma fotografía desde Storage"
+  ],
+  "mode": "Servicios Supabase reales; error de conexión simulado mediante bloqueo de red",
+  "pageErrors": [],
+  "status": "PASS"
+}

@@ -1,0 +1,52 @@
+{
+  "executedAt": "2026-11-07T16:55:31.521Z",
+  "projectRef": "kizwbajlravjjhnbpkhm",
+  "checks": [
+    {
+      "name": "Registrar metadatos sin guardar bytes de imagen en PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "Cargar PNG real en contenedor privado",
+      "status": "PASS"
+    },
+    {
+      "name": "Recuperar URL firmada y comprobar integridad SHA256",
+      "status": "PASS"
+    },
+    {
+      "name": "Acceso anónimo y URL pública rechazados",
+      "status": "PASS"
+    },
+    {
+      "name": "Otro usuario no puede consultar ni firmar la fotografía",
+      "status": "PASS"
+    },
+    {
+      "name": "Servidor rechaza PDF por tipo MIME no permitido",
+      "status": "PASS"
+    },
+    {
+      "name": "Nuevo inicio de sesión recupera referencia persistida",
+      "status": "PASS"
+    }
+  ],
+  "bucket": {
+    "id": "incidence-photos",
+    "public": false,
+    "file_size_limit": 5242880,
+    "allowed_mime_types": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ]
+  },
+  "object": {
+    "id": "7b9f12ee-bf16-462f-83a1-167e083de289",
+    "path": "52a425bc-b846-46e0-8308-7582fa9ac93f/7b9f12ee-bf16-462f-83a1-167e083de289/c8ffd4af30ad599140a59cea.png",
+    "bytes": 20853,
+    "sha256": "c8ffd4af30ad599140a59ceaf80baa5a1a44ef899029205fb712864654eefecd",
+    "mime": "image/png"
+  },
+  "status": "PASS"
+}
